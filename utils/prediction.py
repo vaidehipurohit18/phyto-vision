@@ -1,39 +1,43 @@
 import os
 
-# Keep TensorFlow CPU resource usage low on Render Free.
+# ==============================================================
+# RENDER / CPU SETTINGS
+# ==============================================================
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
 os.environ["TF_NUM_INTRAOP_THREADS"] = "1"
 os.environ["TF_NUM_INTEROP_THREADS"] = "1"
 os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
-import tensorflow as tf
 
-# Limit TensorFlow CPU threads.
-try:
-    tf.config.threading.set_intra_op_parallelism_threads(1)
-    tf.config.threading.set_inter_op_parallelism_threads(1)
-except Exception:
-    pass
 import json
 from pathlib import Path
 import sys
 
-try:
-    import numpy as np
-except Exception:
-    np = None
-
-try:
-    import tensorflow as tf
-    HAS_TENSORFLOW = True
-except ImportError:
-    tf = None
-    HAS_TENSORFLOW = False
+import numpy as np
+from PIL import Image
+import tensorflow as tf
 
 
-# Add project root
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+# ==============================================================
+# PROJECT ROOT
+# ==============================================================
 
-from config import MODEL_PATH, CLASS_NAMES_PATH, CONFIDENCE_THRESHOLD
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.append(str(PROJECT_ROOT))
+
+
+from config import (
+    MODEL_DIR,
+    CLASS_NAMES_PATH,
+    CONFIDENCE_THRESHOLD,
+)
+
 from utils.preprocessing import preprocess_leaf_image
 
 
@@ -50,7 +54,9 @@ class PlantDiseasePredictor:
                 cls
             ).__new__(cls)
 
-            cls._instance.model = None
+            cls._instance.interpreter = None
+            cls._instance.input_details = None
+            cls._instance.output_details = None
             cls._instance.class_names = {}
             cls._instance.is_loaded = False
 
@@ -59,31 +65,77 @@ class PlantDiseasePredictor:
         return cls._instance
 
     # ==========================================================
-    # LOAD MODEL
+    # LOAD TFLITE MODEL
     # ==========================================================
 
     def load_model_and_classes(self):
 
-        if (
-            not HAS_TENSORFLOW
-            or not MODEL_PATH.exists()
-            or not CLASS_NAMES_PATH.exists()
-        ):
+        tflite_path = MODEL_DIR / "plant_disease.tflite"
+
+        if not tflite_path.exists():
+
+            print(
+                f"[PREDICTOR ERROR] TFLite model not found: "
+                f"{tflite_path}",
+                flush=True
+            )
+
+            self.is_loaded = False
+            return
+
+        if not CLASS_NAMES_PATH.exists():
+
+            print(
+                f"[PREDICTOR ERROR] Class names not found: "
+                f"{CLASS_NAMES_PATH}",
+                flush=True
+            )
 
             self.is_loaded = False
             return
 
         try:
 
-            from training.attention import CBAMLayer
+            print(
+                "[PREDICTOR] Loading TFLite model...",
+                flush=True
+            )
 
-            custom_objects = {
-                "CBAMLayer": CBAMLayer
-            }
+            print(
+                f"[PREDICTOR] Model path: {tflite_path}",
+                flush=True
+            )
 
-            self.model = tf.keras.models.load_model(
-                MODEL_PATH,
-                custom_objects=custom_objects
+            self.interpreter = tf.lite.Interpreter(
+                model_path=str(tflite_path),
+                num_threads=1
+            )
+
+            print(
+                "[PREDICTOR] Allocating TFLite tensors...",
+                flush=True
+            )
+
+            self.interpreter.allocate_tensors()
+
+            self.input_details = (
+                self.interpreter.get_input_details()
+            )
+
+            self.output_details = (
+                self.interpreter.get_output_details()
+            )
+
+            print(
+                "[PREDICTOR] Input shape:",
+                self.input_details[0]["shape"],
+                flush=True
+            )
+
+            print(
+                "[PREDICTOR] Output shape:",
+                self.output_details[0]["shape"],
+                flush=True
             )
 
             with open(CLASS_NAMES_PATH, "r") as f:
@@ -98,22 +150,17 @@ class PlantDiseasePredictor:
             self.is_loaded = True
 
             print(
-                f"[PREDICTOR] Successfully loaded model "
-                f"and {len(self.class_names)} class categories."
+                "[PREDICTOR] Successfully loaded TFLite model "
+                f"and {len(self.class_names)} classes.",
+                flush=True
             )
-
-            print("[PREDICTOR] CLASS MAPPING:")
-
-            for idx, name in self.class_names.items():
-
-                print(
-                    f"    {idx}: {name}"
-                )
 
         except Exception as e:
 
             print(
-                f"[PREDICTOR ERROR] Failed loading model: {e}"
+                "[PREDICTOR ERROR] Failed loading TFLite model:",
+                str(e),
+                flush=True
             )
 
             self.is_loaded = False
@@ -187,36 +234,142 @@ class PlantDiseasePredictor:
 
         if not self.is_loaded:
 
+            print(
+                "[PREDICTOR] Model not loaded. "
+                "Attempting reload...",
+                flush=True
+            )
+
             self.load_model_and_classes()
 
             if not self.is_loaded:
 
                 raise RuntimeError(
-                    "AI model is not trained yet."
+                    "AI model is not loaded."
                 )
 
-        if np is None:
+        if pil_image is None:
 
-            raise RuntimeError(
-                "NumPy is not installed."
+            raise ValueError(
+                "No image was provided."
             )
 
         # ------------------------------------------------------
         # PREPROCESS
         # ------------------------------------------------------
 
+        print(
+            "[PREDICTOR] Starting image preprocessing...",
+            flush=True
+        )
+
         input_batch = preprocess_leaf_image(
             pil_image
         )
 
+        input_batch = np.asarray(
+            input_batch,
+            dtype=np.float32
+        )
+
+        print(
+            "[PREDICTOR] Input shape:",
+            input_batch.shape,
+            flush=True
+        )
+
+        print(
+            "[PREDICTOR] Input dtype:",
+            input_batch.dtype,
+            flush=True
+        )
+
         # ------------------------------------------------------
-        # MODEL PREDICTION
+        # VERIFY INPUT SHAPE
         # ------------------------------------------------------
 
-        predictions = self.model.predict(
-            input_batch,
-            verbose=0
-        )[0]
+        if input_batch.shape != (
+            1,
+            224,
+            224,
+            3
+        ):
+
+            print(
+                "[PREDICTOR] Reshaping input...",
+                flush=True
+            )
+
+            input_batch = input_batch.reshape(
+                1,
+                224,
+                224,
+                3
+            )
+
+        # ------------------------------------------------------
+        # TENSOR INDICES
+        # ------------------------------------------------------
+
+        input_index = (
+            self.input_details[0]["index"]
+        )
+
+        output_index = (
+            self.output_details[0]["index"]
+        )
+
+        # ------------------------------------------------------
+        # TFLITE INFERENCE DIAGNOSTICS
+        # ------------------------------------------------------
+
+        print(
+            "[PREDICTOR] Starting TFLite inference...",
+            flush=True
+        )
+
+        print(
+            "[PREDICTOR] BEFORE set_tensor",
+            flush=True
+        )
+
+        self.interpreter.set_tensor(
+            input_index,
+            input_batch
+        )
+
+        print(
+            "[PREDICTOR] AFTER set_tensor",
+            flush=True
+        )
+
+        print(
+            "[PREDICTOR] BEFORE invoke",
+            flush=True
+        )
+
+        self.interpreter.invoke()
+
+        print(
+            "[PREDICTOR] AFTER invoke",
+            flush=True
+        )
+
+        predictions = (
+            self.interpreter.get_tensor(
+                output_index
+            )[0]
+        )
+
+        print(
+            "[PREDICTOR] AFTER get_tensor",
+            flush=True
+        )
+
+        print(
+            "[PREDICTOR] TFLite inference completed.",
+            flush=True
+        )
 
         # ------------------------------------------------------
         # TOP CLASS
@@ -240,10 +393,12 @@ class PlantDiseasePredictor:
             "Unknown"
         )
 
-        plant_name, disease_name, status = (
-            self.parse_class_name(
-                raw_class
-            )
+        (
+            plant_name,
+            disease_name,
+            status
+        ) = self.parse_class_name(
+            raw_class
         )
 
         # ------------------------------------------------------
@@ -251,7 +406,8 @@ class PlantDiseasePredictor:
         # ------------------------------------------------------
 
         is_low_confidence = (
-            confidence_val < CONFIDENCE_THRESHOLD
+            confidence_val
+            < CONFIDENCE_THRESHOLD
         )
 
         # ------------------------------------------------------
@@ -273,10 +429,12 @@ class PlantDiseasePredictor:
                 "Unknown"
             )
 
-            p_name, d_name, c_status = (
-                self.parse_class_name(
-                    c_raw
-                )
+            (
+                p_name,
+                d_name,
+                c_status
+            ) = self.parse_class_name(
+                c_raw
             )
 
             score = float(
@@ -305,57 +463,43 @@ class PlantDiseasePredictor:
             })
 
         # ------------------------------------------------------
-        # PRINT DEBUG INFORMATION
+        # DEBUG OUTPUT
         # ------------------------------------------------------
 
-        print("\n" + "=" * 70)
-
-        print("[PREDICTION]")
-
         print(
-            f"Top class index : {top_idx}"
+            "\n" + "=" * 70,
+            flush=True
         )
 
         print(
-            f"Top class       : {raw_class}"
+            "[PREDICTION]",
+            flush=True
         )
 
         print(
-            f"Plant           : {plant_name}"
+            f"Plant      : {plant_name}",
+            flush=True
         )
 
         print(
-            f"Disease         : {disease_name}"
+            f"Disease    : {disease_name}",
+            flush=True
         )
 
         print(
-            f"Status          : {status}"
+            f"Status     : {status}",
+            flush=True
         )
 
         print(
-            f"Confidence      : {confidence_pct}%"
+            f"Confidence : {confidence_pct}%",
+            flush=True
         )
 
         print(
-            f"Low confidence  : {is_low_confidence}"
+            "=" * 70,
+            flush=True
         )
-
-        print(
-            f"Threshold       : "
-            f"{CONFIDENCE_THRESHOLD * 100:.0f}%"
-        )
-
-        print("\nTOP 5 PREDICTIONS:")
-
-        for item in top_5_predictions:
-
-            print(
-                f"   "
-                f"{item['confidence']:6.2f}%  "
-                f"{item['raw_class']}"
-            )
-
-        print("=" * 70)
 
         # ------------------------------------------------------
         # RETURN
@@ -385,7 +529,6 @@ class PlantDiseasePredictor:
 
             "top_5": top_5_predictions,
 
-            # Keep top_3 for compatibility
             "top_3": top_5_predictions[:3]
 
         }
