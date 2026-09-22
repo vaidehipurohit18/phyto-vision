@@ -3,11 +3,13 @@ services:
     name: phyto-vision
     runtime: python
     buildCommand: pip install -r requirements-deploy.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 1 --timeout 600 --graceful-timeout 600 --keep-alive 5
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 1 --timeout 300 --graceful-timeout 30
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.10
       - key: TF_NUM_INTRAOP_THREADS
         value: "1"
       - key: TF_NUM_INTEROP_THREADS
+        value: "1"
+      - key: OMP_NUM_THREADS
         value: "1"

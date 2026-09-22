@@ -1,3 +1,18 @@
+import os
+
+# Keep TensorFlow CPU resource usage low on Render Free.
+os.environ["TF_NUM_INTRAOP_THREADS"] = "1"
+os.environ["TF_NUM_INTEROP_THREADS"] = "1"
+os.environ["OMP_NUM_THREADS"] = "1"
+
+import tensorflow as tf
+
+# Limit TensorFlow CPU threads.
+try:
+    tf.config.threading.set_intra_op_parallelism_threads(1)
+    tf.config.threading.set_inter_op_parallelism_threads(1)
+except Exception:
+    pass
 import json
 from pathlib import Path
 import sys

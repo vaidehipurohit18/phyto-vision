@@ -247,153 +247,62 @@ def predict():
             f"Confidence={confidence}"
         )
 
-        # -----------------------------------------------------
+               # -----------------------------------------------------
         # GRAD-CAM
         # -----------------------------------------------------
 
+        # Temporarily disabled for Render debugging.
+        # The worker is currently being killed during/around
+        # model inference because of the Free instance resource
+        # limits. We will re-enable Grad-CAM after basic
+        # prediction works reliably.
+
         gradcam_rel_path = None
 
-        log("========== STARTING GRAD-CAM ==========")
-
-        gradcam_start = time.time()
-
-        if predictor_instance.model is not None:
-
-            log("Model object exists. Finding predicted class...")
-
-            top_class_name = (
-                pred_result.get(
-                    'raw_class'
-                )
-            )
-
-            log(
-                f"Predicted raw class: {top_class_name}"
-            )
-
-            class_idx = None
-
-            for idx, c_name in (
-                predictor_instance
-                .class_names
-                .items()
-            ):
-
-                if c_name == top_class_name:
-
-                    class_idx = idx
-
-                    break
-
-            log(
-                f"Grad-CAM class index: {class_idx}"
-            )
-
-            if class_idx is not None:
-
-                try:
-
-                    log(
-                        "Importing preprocessing function..."
-                    )
-
-                    from utils.preprocessing import (
-                        preprocess_leaf_image
-                    )
-
-                    log(
-                        "Starting image preprocessing for Grad-CAM..."
-                    )
-
-                    batch_tensor = (
-                        preprocess_leaf_image(
-                            pil_image
-                        )
-                    )
-
-                    log(
-                        "Grad-CAM preprocessing finished."
-                    )
-
-                    log(
-                        "Calling generate_gradcam_heatmap()..."
-                    )
-
-                    heatmap_start = time.time()
-
-                    heatmap = (
-                        generate_gradcam_heatmap(
-                            predictor_instance.model,
-                            batch_tensor,
-                            class_idx
-                        )
-                    )
-
-                    heatmap_time = time.time() - heatmap_start
-
-                    log(
-                        f"generate_gradcam_heatmap() "
-                        f"finished in {heatmap_time:.2f}s"
-                    )
-
-                    if heatmap is not None:
-
-                        log(
-                            "Heatmap generated successfully."
-                        )
-
-                        log(
-                            "Saving Grad-CAM overlay..."
-                        )
-
-                        gradcam_rel_path = (
-                            save_gradcam_overlay(
-                                pil_image,
-                                heatmap,
-                                f"gradcam_{filename}"
-                            )
-                        )
-
-                        log(
-                            f"Grad-CAM overlay saved: "
-                            f"{gradcam_rel_path}"
-                        )
-
-                    else:
-
-                        log(
-                            "WARNING: Grad-CAM returned None."
-                        )
-
-                except Exception as gradcam_error:
-
-                    log(
-                        f"WARNING: Grad-CAM failed: "
-                        f"{gradcam_error}"
-                    )
-
-                    app.logger.exception(
-                        "Grad-CAM exception"
-                    )
-
-            else:
-
-                log(
-                    "WARNING: Could not find class index "
-                    "for Grad-CAM."
-                )
-
-        else:
-
-            log(
-                "WARNING: predictor_instance.model is None."
-            )
-
-        gradcam_time = time.time() - gradcam_start
+        log(
+            "========== GRAD-CAM TEMPORARILY DISABLED =========="
+        )
 
         log(
-            f"TOTAL GRAD-CAM STAGE TIME: "
+            "Skipping Grad-CAM to reduce memory/CPU usage on Render."
+        )
+
+        gradcam_time = 0.0
+
+        log(
+            "TOTAL GRAD-CAM STAGE TIME: "
             f"{gradcam_time:.2f}s"
+        )
+
+        # -----------------------------------------------------
+        # SAVE TO DATABASE
+        # -----------------------------------------------------
+
+        log(
+            "========== STARTING DATABASE SAVE =========="
+        )
+
+        database_start = time.time()
+
+        prediction_id = insert_prediction(
+            image_name=safe_filename,
+            plant_name=plant_name,
+            disease_name=disease_name,
+            confidence=confidence,
+            status=status,
+            image_path=rel_image_path,
+            gradcam_path=gradcam_rel_path
+        )
+
+        database_time = time.time() - database_start
+
+        log(
+            f"Database save finished in "
+            f"{database_time:.2f}s"
+        )
+
+        log(
+            f"Prediction ID: {prediction_id}"
         )
 
         # -----------------------------------------------------
