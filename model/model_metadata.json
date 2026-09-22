@@ -1,0 +1,14 @@
+{
+  "trained_at": "2026-08-17 01:26:05",
+  "num_classes": 38,
+  "epochs_requested": 8,
+  "epochs_completed": 8,
+  "batch_size": 32,
+  "learning_rate": 0.001,
+  "training_duration_seconds": 19131.92,
+  "final_train_accuracy": 0.9134504795074463,
+  "final_val_accuracy": 0.9334737062454224,
+  "final_val_loss": 0.20097553730010986,
+  "architecture": "MobileNetV2 + CBAM Attention",
+  "base_model_frozen": true
+}

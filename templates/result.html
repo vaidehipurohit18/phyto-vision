@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Result | {{ record.plant_name }} - {{ record.disease_name }}{% endblock %}
+
+{% block content %}
+<div class="container page-container">
+    <!-- Breadcrumb & Top Bar -->
+    <div class="result-topbar">
+        <a href="{{ url_for('detect') }}" class="btn btn-sm btn-outline">
+            <i class="fa-solid fa-arrow-left"></i> New Detection
+        </a>
+        <div class="result-timestamp">
+            <i class="fa-regular fa-clock"></i> Analyzed on {{ record.prediction_date }}
+        </div>
+    </div>
+
+    <!-- Low Confidence Warning Alert -->
+    {% if is_low_confidence %}
+    <div class="alert alert-warning mb-4">
+        <div class="alert-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="alert-content">
+            <strong>Low Confidence Prediction ({{ record.confidence }}%):</strong> 
+            The AI model is uncertain about this leaf image. The confidence score is below the threshold of {{ confidence_threshold_pct }}%. 
+            Please try taking a closer, clearer, and better-lit leaf photo without background clutter.
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Result Main Hero Card -->
+    <div class="result-hero-card card mb-4">
+        <div class="result-grid">
+            <!-- Images Grid: Original vs Grad-CAM -->
+            <div class="result-images-col">
+                <div class="image-comparison-box">
+                    <div class="img-box">
+                        <span class="img-label">Original Leaf</span>
+                        <img src="/{{ record.image_path }}" alt="Original Leaf" class="result-img">
+                    </div>
+                    {% if record.gradcam_path %}
+                    <div class="img-box">
+                        <span class="img-label gradcam-tag"><i class="fa-solid fa-eye"></i> Grad-CAM Heatmap</span>
+                        <img src="/{{ record.gradcam_path }}" alt="Grad-CAM Heatmap" class="result-img">
+                    </div>
+                    {% endif %}
+                </div>
+                {% if record.gradcam_path %}
+                <p class="gradcam-caption">
+                    <i class="fa-solid fa-circle-info"></i> <strong>Grad-CAM Explanation:</strong> Warm red/yellow zones represent the specific leaf surface regions that contributed most strongly to the neural network's decision.
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Metrics & Class Outcome Column -->
+            <div class="result-details-col">
+                <div class="status-badge-wrapper">
+                    {% if record.status.lower() == 'healthy' %}
+                    <span class="badge badge-healthy"><i class="fa-solid fa-shield-heart"></i> Healthy Leaf</span>
+                    {% else %}
+                    <span class="badge badge-diseased"><i class="fa-solid fa-biohazard"></i> Diseased Leaf</span>
+                    {% endif %}
+                </div>
+
+                <div class="diagnosis-header">
+                    <span class="plant-name-tag">{{ record.plant_name }}</span>
+                    <h1 class="disease-title">{{ record.disease_name }}</h1>
+                </div>
+
+                <!-- Confidence Gauge Meter -->
+                <div class="confidence-meter-box">
+                    <div class="confidence-header">
+                        <span>Prediction Confidence</span>
+                        <span class="confidence-score">{{ record.confidence }}%</span>
+                    </div>
+                    <div class="meter-bar-bg">
+                        <div class="meter-bar-fill {% if record.confidence < 60 %}meter-low{% elif record.confidence < 85 %}meter-medium{% else %}meter-high{% endif %}" 
+                             style="width: {{ record.confidence }}%;"></div>
+                    </div>
+                    <p class="confidence-note">Calculated directly from Softmax probability distributions.</p>
+                </div>
+
+                <!-- Quick Summary Metadata -->
+                <div class="result-meta-grid">
+                    <div class="meta-item">
+                        <span class="meta-label">Target Host</span>
+                        <span class="meta-val">{{ record.plant_name }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Health Status</span>
+                        <span class="meta-val">{{ record.status }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Model Used</span>
+                        <span class="meta-val">MobileNetV2 + CBAM</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Record ID</span>
+                        <span class="meta-val">#{{ record.id }}</span>
+                    </div>
+                </div>
+
+                {% if disease_info %}
+                <div class="result-action-box">
+                    <a href="{{ url_for('encyclopedia_detail', disease_id=disease_info.id) }}" class="btn btn-secondary btn-block">
+                        <i class="fa-solid fa-book-open"></i> Learn More in Encyclopedia
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Disease Technical Details & Guidance -->
+    {% if disease_info %}
+    <div class="card disease-guidance-card mb-4">
+        <h2 class="card-title-lg"><i class="fa-solid fa-notes-medical"></i> Agricultural Information & Management</h2>
+        
+        <p class="disease-description-lead">{{ disease_info.description }}</p>
+
+        <div class="guidance-grid">
+            <!-- Symptoms Box -->
+            <div class="guidance-box symptoms-box">
+                <h3><i class="fa-solid fa-stethoscope"></i> Key Symptoms</h3>
+                <ul>
+                    {% for symptom in disease_info.symptoms %}
+                    <li><i class="fa-solid fa-circle-dot"></i> {{ symptom }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Causes Box -->
+            <div class="guidance-box causes-box">
+                <h3><i class="fa-solid fa-bug"></i> Primary Causes</h3>
+                <ul>
+                    {% for cause in disease_info.causes %}
+                    <li><i class="fa-solid fa-triangle-exclamation"></i> {{ cause }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Management Box -->
+            <div class="guidance-box management-box">
+                <h3><i class="fa-solid fa-hand-holding-medical"></i> Recommended Management</h3>
+                <ul>
+                    {% for item in disease_info.management %}
+                    <li><i class="fa-solid fa-kit-medical"></i> {{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Prevention Box -->
+            <div class="guidance-box prevention-box">
+                <h3><i class="fa-solid fa-shield"></i> Preventive Measures</h3>
+                <ul>
+                    {% for item in disease_info.prevention %}
+                    <li><i class="fa-solid fa-circle-check"></i> {{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card mb-4 text-center p-4">
+        <p>No specific encyclopedia entry matched for this disease category. Please consult a agricultural specialist.</p>
+    </div>
+    {% endif %}
+
+    <!-- Page Action Controls -->
+    <div class="result-actions-bar text-center">
+        <a href="{{ url_for('detect') }}" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-camera"></i> Scan Another Leaf
+        </a>
+        <a href="{{ url_for('history') }}" class="btn btn-outline btn-lg">
+            <i class="fa-solid fa-list-check"></i> View History
+        </a>
+        <button onclick="window.print()" class="btn btn-secondary btn-lg">
+            <i class="fa-solid fa-print"></i> Print Diagnosis Report
+        </button>
+    </div>
+</div>
+{% endblock %}

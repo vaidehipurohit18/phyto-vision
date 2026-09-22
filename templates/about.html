@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block title %}About Model | B.Tech Major Project{% endblock %}
+
+{% block content %}
+<div class="container page-container">
+
+    <div class="page-header text-center">
+        <h1 class="page-title">Attention-Based CNN Architecture</h1>
+        <p class="page-subtitle">
+            Technical Overview of the MobileNetV2 + CBAM Model
+        </p>
+    </div>
+
+    <!-- Overview Card -->
+    <div class="card mb-4" id="architecture">
+        <h2 class="card-title-lg">
+            <i class="fa-solid fa-brain"></i> System Overview
+        </h2>
+
+        <p class="lead">
+            This B.Tech Major Project implements an
+            <strong>Attention-Based Convolutional Neural Network (CNN)</strong>
+            for plant leaf disease classification from digital images.
+            The proposed model combines a lightweight
+            <strong>MobileNetV2</strong> backbone with a
+            <strong>Convolutional Block Attention Module (CBAM)</strong>
+            to refine extracted feature representations before final classification.
+        </p>
+
+        <p>
+            The model is trained to classify plant leaf images into
+            <strong>38 different classes</strong>, including healthy and
+            diseased plant categories.
+        </p>
+    </div>
+
+
+    <!-- Architecture Pipeline -->
+    <div class="card mb-4">
+        <h2 class="card-title-lg">
+            <i class="fa-solid fa-diagram-project"></i>
+            Model Architecture
+        </h2>
+
+        <div class="cbam-diagram-box">
+
+            <div class="cbam-step">
+                <div class="step-badge">1</div>
+                <h4>Input Image</h4>
+                <p>
+                    Plant leaf images are resized and preprocessed before
+                    being passed to the neural network.
+                </p>
+            </div>
+
+            <div class="cbam-step">
+                <div class="step-badge">2</div>
+                <h4>MobileNetV2 Feature Extraction</h4>
+                <p>
+                    MobileNetV2 acts as the convolutional backbone and
+                    extracts hierarchical visual features from the input image.
+                    Its lightweight architecture makes it suitable for
+                    efficient image classification.
+                </p>
+            </div>
+
+            <div class="cbam-step">
+                <div class="step-badge">3</div>
+                <h4>CBAM Attention Module</h4>
+                <p>
+                    The extracted feature maps are refined using the
+                    Convolutional Block Attention Module (CBAM), which
+                    sequentially applies Channel Attention and Spatial Attention.
+                </p>
+            </div>
+
+            <div class="cbam-step">
+                <div class="step-badge">4</div>
+                <h4>Global Average Pooling</h4>
+                <p>
+                    The attention-refined feature maps are reduced into a
+                    compact feature representation.
+                </p>
+            </div>
+
+            <div class="cbam-step">
+                <div class="step-badge">5</div>
+                <h4>Dropout</h4>
+                <p>
+                    Dropout is applied to reduce overfitting and improve
+                    the model's generalization capability.
+                </p>
+            </div>
+
+            <div class="cbam-step">
+                <div class="step-badge">6</div>
+                <h4>Dense Classification Layer</h4>
+                <p>
+                    The final Dense layer produces probability scores for
+                    all 38 plant disease and healthy classes.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- CBAM Mathematical Breakdown -->
+    <div class="card mb-4">
+        <h2 class="card-title-lg">
+            <i class="fa-solid fa-layer-group"></i>
+            CBAM Attention Architecture
+        </h2>
+
+        <p>
+            CBAM sequentially applies
+            <strong>Channel Attention</strong> followed by
+            <strong>Spatial Attention</strong>.
+        </p>
+
+        <div class="cbam-diagram-box">
+
+            <div class="cbam-step">
+                <div class="step-badge">1</div>
+
+                <h4>
+                    Input Feature Tensor
+                    \(\mathbf{F} \in \mathbb{R}^{H \times W \times C}\)
+                </h4>
+
+                <p>
+                    Feature maps extracted by the MobileNetV2 convolutional backbone.
+                </p>
+            </div>
+
+
+            <div class="cbam-step">
+
+                <div class="step-badge">2</div>
+
+                <h4>
+                    Channel Attention Module
+                    \(\mathbf{M}_c(\mathbf{F})\)
+                </h4>
+
+                <p>
+                    Channel attention aggregates spatial information using
+                    Global Average Pooling and Global Max Pooling.
+                    These features are processed through a shared MLP with
+                    reduction ratio \(r = 8\).
+                </p>
+
+                <div class="math-block">
+                    \[
+                    \mathbf{M}_c(\mathbf{F})
+                    =
+                    \sigma
+                    \left(
+                    \text{MLP}(\text{AvgPool}(\mathbf{F}))
+                    +
+                    \text{MLP}(\text{MaxPool}(\mathbf{F}))
+                    \right)
+                    \]
+                </div>
+
+                <p>
+                    The channel-refined feature map is:
+                </p>
+
+                <div class="math-block">
+                    \[
+                    \mathbf{F}'
+                    =
+                    \mathbf{M}_c(\mathbf{F})
+                    \otimes
+                    \mathbf{F}
+                    \]
+                </div>
+
+            </div>
+
+
+            <div class="cbam-step">
+
+                <div class="step-badge">3</div>
+
+                <h4>
+                    Spatial Attention Module
+                    \(\mathbf{M}_s(\mathbf{F}')\)
+                </h4>
+
+                <p>
+                    Spatial attention computes average pooling and maximum
+                    pooling across the channel dimension. The resulting
+                    feature maps are concatenated and processed using a
+                    \(7 \times 7\) convolution.
+                </p>
+
+                <div class="math-block">
+                    \[
+                    \mathbf{M}_s(\mathbf{F}')
+                    =
+                    \sigma
+                    \left(
+                    f^{7 \times 7}
+                    \left(
+                    [
+                    \text{AvgPool}(\mathbf{F}');
+                    \text{MaxPool}(\mathbf{F}')
+                    ]
+                    \right)
+                    \right)
+                    \]
+                </div>
+
+                <p>
+                    The final attention-refined feature map is:
+                </p>
+
+                <div class="math-block">
+                    \[
+                    \mathbf{F}''
+                    =
+                    \mathbf{M}_s(\mathbf{F}')
+                    \otimes
+                    \mathbf{F}'
+                    \]
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Model Performance -->
+    <div class="card mb-4">
+        <h2 class="card-title-lg">
+            <i class="fa-solid fa-chart-line"></i>
+            Model Performance
+        </h2>
+
+        <p>
+            The fine-tuned MobileNetV2 + CBAM model was evaluated on the
+            complete validation dataset consisting of
+            <strong>17,572 images across 38 classes</strong>.
+        </p>
+
+        <div class="metadata-grid">
+
+            <div class="meta-card">
+                <span class="meta-label">Validation Accuracy</span>
+                <span class="meta-value">97.31%</span>
+            </div>
+
+            <div class="meta-card">
+                <span class="meta-label">Macro F1-Score</span>
+                <span class="meta-value">97.30%</span>
+            </div>
+
+            <div class="meta-card">
+                <span class="meta-label">Weighted F1-Score</span>
+                <span class="meta-value">97.32%</span>
+            </div>
+
+            <div class="meta-card">
+                <span class="meta-label">Total Classes</span>
+                <span class="meta-value">38</span>
+            </div>
+
+        </div>
+
+        <p class="text-muted mt-3">
+            <i class="fa-solid fa-circle-info"></i>
+            Performance metrics were obtained from evaluation on the complete validation dataset.
+        </p>
+    </div>
+
+
+    <!-- Active Model Metadata -->
+    {% if metadata %}
+    <div class="card mb-4">
+
+        <h2 class="card-title-lg">
+            <i class="fa-solid fa-sliders"></i>
+            Active Model Metadata
+        </h2>
+
+        <div class="metadata-grid">
+
+            <div class="meta-card">
+                <span class="meta-label">Architecture</span>
+                <span class="meta-value">
+                    {{ metadata.architecture }}
+                </span>
+            </div>
+
+            <div class="meta-card">
+                <span class="meta-label">Classes Trained</span>
+                <span class="meta-value">
+                    {{ metadata.num_classes }}
+                </span>
+            </div>
+
+            <div class="meta-card">
+                <span class="meta-label">Epochs Completed</span>
+                <span class="meta-value">
+                    {{ metadata.epochs_completed }}
+                </span>
+            </div>
+
+            <div class="meta-card">
+                <span class="meta-label">Validation Accuracy</span>
+                <span class="meta-value">
+                    {{ (metadata.final_val_accuracy * 100)|round(2) }}%
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

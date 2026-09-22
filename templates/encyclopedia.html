@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Plant Disease Encyclopedia | Knowledge Base{% endblock %}
+
+{% block content %}
+<div class="container page-container">
+    <div class="page-header text-center">
+        <h1 class="page-title">Plant Disease Encyclopedia</h1>
+        <p class="page-subtitle">Comprehensive guide to plant leaf pathologies, symptoms, causes, management, and AI support status</p>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="card toolbar-card mb-4">
+        <div class="toolbar-grid">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="encyclopedia-search" class="form-control" placeholder="Search disease, symptoms, or plant type...">
+            </div>
+
+            <div class="filter-box">
+                <label for="plant-filter" class="filter-label"><i class="fa-solid fa-seedling"></i> Plant Filter:</label>
+                <select id="plant-filter" class="form-select">
+                    <option value="all">All Plants</option>
+                    {% for p in plants %}
+                    <option value="{{ p|lower }}">{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Encyclopedia Cards Grid -->
+    <div class="encyclopedia-grid" id="encyclopedia-grid">
+        {% for item in diseases %}
+        <div class="card encyclopedia-card" data-plant="{{ item.plant|lower }}" data-search="{{ item.plant|lower }} {{ item.disease|lower }} {{ item.description|lower }} {{ item.symptoms|join(' ')|lower }}">
+            <div class="card-header-badge">
+                <span class="plant-badge">{{ item.plant }}</span>
+                {% if item.is_supported %}
+                <span class="ai-support-badge" title="This class is supported by the active TensorFlow AI model">
+                    <i class="fa-solid fa-brain"></i> AI Supported
+                </span>
+                {% else %}
+                <span class="ai-unsupported-badge" title="Informational guide entry">
+                    <i class="fa-solid fa-book"></i> General Guide
+                </span>
+                {% endif %}
+            </div>
+
+            <h3 class="disease-card-title">{{ item.disease }}</h3>
+            
+            <p class="disease-card-desc">
+                {{ item.description|truncate(140) }}
+            </p>
+
+            <div class="symptoms-preview">
+                <strong><i class="fa-solid fa-stethoscope"></i> Symptoms:</strong>
+                <ul>
+                    {% for s in item.symptoms[:2] %}
+                    <li>{{ s }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="card-footer-action">
+                <a href="{{ url_for('encyclopedia_detail', disease_id=item.id) }}" class="btn btn-outline btn-block">
+                    View Full Disease Profile <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Empty Search State -->
+    <div class="empty-state-card card text-center hidden" id="empty-encyclopedia-card">
+        <div class="empty-icon"><i class="fa-solid fa-book-bookmark"></i></div>
+        <h2>No Diseases Found</h2>
+        <p>No plant diseases match your search query or plant filter.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/encyclopedia.js') }}"></script>
+{% endblock %}

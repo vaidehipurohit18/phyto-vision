@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction History | Plant Disease Detection AI{% endblock %}
+
+{% block content %}
+<div class="container page-container">
+    <div class="page-header text-center">
+        <h1 class="page-title">Prediction History</h1>
+        <p class="page-subtitle">View, search, and filter all historical leaf disease diagnostic records</p>
+    </div>
+
+    <!-- Filter & Toolbar Card -->
+    <div class="card toolbar-card mb-4">
+        <div class="toolbar-grid">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="history-search" class="form-control" placeholder="Search by plant, disease name, or file...">
+            </div>
+
+            <div class="filter-box">
+                <label for="history-status-filter" class="filter-label"><i class="fa-solid fa-filter"></i> Status:</label>
+                <select id="history-status-filter" class="form-select">
+                    <option value="all">All Records</option>
+                    <option value="diseased">Diseased Only</option>
+                    <option value="healthy">Healthy Only</option>
+                </select>
+            </div>
+
+            <div class="view-toggle-box">
+                <button class="btn btn-outline active" id="toggle-table-btn" title="Table View">
+                    <i class="fa-solid fa-table-list"></i>
+                </button>
+                <button class="btn btn-outline" id="toggle-cards-btn" title="Grid Card View">
+                    <i class="fa-solid fa-border-all"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State Box -->
+    <div class="empty-state-card card text-center hidden" id="empty-history-card">
+        <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+        <h2>No Predictions Found</h2>
+        <p id="empty-history-text">No prediction records stored in history. Upload your first leaf image to begin.</p>
+        <a href="{{ url_for('detect') }}" class="btn btn-primary btn-lg mt-3">
+            <i class="fa-solid fa-camera"></i> Detect Leaf Disease
+        </a>
+    </div>
+
+    <!-- History Table View -->
+    <div class="card table-card mb-4" id="history-table-container">
+        <div class="table-responsive">
+            <table class="table" id="history-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Plant Host</th>
+                        <th>Disease Condition</th>
+                        <th>Confidence</th>
+                        <th>Status</th>
+                        <th>Date & Time</th>
+                        <th class="text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body">
+                    <!-- Loaded via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- History Card Grid View (Mobile/Responsive) -->
+    <div class="history-cards-grid hidden" id="history-cards-container">
+        <!-- Loaded via JS -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/history.js') }}"></script>
+{% endblock %}

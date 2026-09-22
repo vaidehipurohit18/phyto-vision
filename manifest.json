@@ -1,0 +1,21 @@
+{
+  "name": "PhytoVision AI - Plant Disease Detection",
+  "short_name": "PhytoVision",
+  "description": "Attention-Based CNN Plant Disease Detection and Classification (MobileNetV2 + CBAM)",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1b4d3e",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/628/628324.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/628/628324.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

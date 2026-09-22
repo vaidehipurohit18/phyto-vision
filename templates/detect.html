@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Detect Plant Disease | Attention-Based CNN Scanner{% endblock %}
+
+{% block content %}
+<div class="container page-container">
+    <div class="page-header text-center">
+        <h1 class="page-title">Leaf Disease Detection</h1>
+        <p class="page-subtitle">Upload or capture a plant leaf image for real-time MobileNetV2 + CBAM classification</p>
+    </div>
+
+    {% if not model_loaded %}
+    <div class="alert alert-danger" style="max-width: 800px; margin: 0 auto 30px;">
+        <div class="alert-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+        <div class="alert-content">
+            <strong>AI Model Is Not Trained Yet:</strong> 
+            The TensorFlow model binary <code>plant_disease_model.keras</code> is missing. 
+            Real predictions cannot be performed until the model is trained. Please execute the training script:
+            <br>
+            <code class="code-block">python training/train_model.py</code>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="detect-wrapper">
+        <!-- Detection Form Card -->
+        <div class="card detect-card">
+            <form id="detect-form" enctype="multipart/form-data">
+                <div class="drop-zone" id="drop-zone">
+                    <input type="file" name="leaf_image" id="leaf_image" accept="image/png, image/jpeg, image/jpg, image/webp" capture="environment" hidden>
+                    
+                    <div class="drop-zone-content" id="drop-zone-prompt">
+                        <div class="upload-icon">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <h3>Drag & Drop Leaf Image Here</h3>
+                        <p class="upload-sub">or click to browse from device / camera</p>
+                        <div class="allowed-formats">
+                            Supported Formats: JPG, JPEG, PNG, WEBP (Max 16 MB)
+                        </div>
+                    </div>
+
+                    <!-- Image Preview Container -->
+                    <div class="image-preview-container hidden" id="preview-container">
+                        <img id="image-preview" src="#" alt="Leaf Preview">
+                        <div class="preview-overlay">
+                            <button type="button" class="btn btn-sm btn-danger" id="remove-img-btn">
+                                <i class="fa-solid fa-trash"></i> Remove Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guidelines List -->
+                <div class="upload-tips">
+                    <h4><i class="fa-solid fa-lightbulb"></i> For Best Detection Results:</h4>
+                    <ul>
+                        <li><i class="fa-solid fa-check"></i> Ensure a single clearly visible leaf dominates the frame</li>
+                        <li><i class="fa-solid fa-check"></i> Use bright, even natural lighting without strong shadows</li>
+                        <li><i class="fa-solid fa-check"></i> Keep the leaf disease spots sharply in focus</li>
+                        <li><i class="fa-solid fa-check"></i> Avoid excessive soil, weeds, or background clutter</li>
+                    </ul>
+                </div>
+
+                <!-- Error Alert Box -->
+                <div class="alert alert-danger hidden" id="detect-error-box">
+                    <div class="alert-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+                    <div class="alert-content" id="detect-error-msg"></div>
+                </div>
+
+                <!-- Action Button & Spinner -->
+                <div class="detect-actions text-center">
+                    <button type="submit" class="btn btn-primary btn-xl" id="submit-detect-btn" {% if not model_loaded %}disabled{% endif %}>
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Detect Disease Now
+                    </button>
+                </div>
+
+                <!-- Progress Loading Modal -->
+                <div class="loading-overlay hidden" id="loading-overlay">
+                    <div class="spinner-box">
+                        <div class="spinner"></div>
+                        <h3 class="loading-title">Analyzing Leaf Image...</h3>
+                        <p class="loading-desc">Running MobileNetV2 + CBAM Attention Neural Network & Generating Grad-CAM Heatmap</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/detect.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plant Disease Detection & Classification using Attention-Based CNN (MobileNetV2 + CBAM). Real-time explainable AI leaf analysis for agriculture.">
+    <meta name="theme-color" content="#1b4d3e">
+    <title>{% block title %}Plant Disease Detection using Attention-Based CNN{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar Header -->
+    <header class="site-header" id="site-header">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="brand-logo" id="nav-brand-logo">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">PhytoVision<span class="brand-dot">.AI</span></span>
+                    <span class="brand-sub">Attention-Based Plant AI</span>
+                </div>
+            </a>
+
+            <nav class="nav-menu" id="nav-menu">
+                <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" id="nav-home">Home</a>
+                <a href="{{ url_for('detect') }}" class="nav-link {% if request.endpoint == 'detect' %}active{% endif %}" id="nav-detect">Detect</a>
+                <a href="{{ url_for('encyclopedia') }}" class="nav-link {% if request.endpoint in ['encyclopedia', 'encyclopedia_detail'] %}active{% endif %}" id="nav-encyclopedia">Encyclopedia</a>
+                <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" id="nav-dashboard">Dashboard</a>
+                <a href="{{ url_for('history') }}" class="nav-link {% if request.endpoint == 'history' %}active{% endif %}" id="nav-history">History</a>
+                <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}" id="nav-about">About Model</a>
+                
+                <a href="{{ url_for('detect') }}" class="btn btn-primary nav-cta" id="nav-cta-btn">
+                    <i class="fa-solid fa-camera"></i> Detect Disease
+                </a>
+            </nav>
+
+            <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Navigation Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Content Container -->
+    <main class="main-content" id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col brand-col">
+                    <div class="footer-brand">
+                        <i class="fa-solid fa-seedling"></i> PhytoVision AI
+                    </div>
+                    <p class="footer-desc">
+                        Attention-Based Convolutional Neural Network (MobileNetV2 + CBAM) for accurate, explainable plant leaf disease classification.
+                    </p>
+                    <div class="footer-badges">
+                        <span class="tech-badge"><i class="fa-brands fa-python"></i> TensorFlow</span>
+                        <span class="tech-badge"><i class="fa-solid fa-brain"></i> CBAM Attention</span>
+                        <span class="tech-badge"><i class="fa-solid fa-flask"></i> Flask</span>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4 class="footer-title">Quick Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('index') }}"><i class="fa-solid fa-angle-right"></i> Home Landing</a></li>
+                        <li><a href="{{ url_for('detect') }}"><i class="fa-solid fa-angle-right"></i> Leaf Disease Detection</a></li>
+                        <li><a href="{{ url_for('encyclopedia') }}"><i class="fa-solid fa-angle-right"></i> Disease Encyclopedia</a></li>
+                        <li><a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-angle-right"></i> Analytics Dashboard</a></li>
+                        <li><a href="{{ url_for('history') }}"><i class="fa-solid fa-angle-right"></i> Prediction Log History</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4 class="footer-title">Academic & Technical</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('about') }}#architecture"><i class="fa-solid fa-angle-right"></i> CBAM Architecture Breakdown</a></li>
+                        <li><a href="{{ url_for('about') }}#gradcam"><i class="fa-solid fa-angle-right"></i> Explainable AI (Grad-CAM)</a></li>
+                        <li><a href="{{ url_for('about') }}#viva"><i class="fa-solid fa-angle-right"></i> B.Tech Viva Reference Guide</a></li>
+                        <li><a href="/health" target="_blank"><i class="fa-solid fa-angle-right"></i> System Health API (/health)</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4 class="footer-title">Important Disclaimer</h4>
+                    <p class="footer-disclaimer">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        This application is designed for educational & B.Tech research demonstration. Predictions are generated by deep learning models and should be cross-verified by agricultural experts before applying treatments.
+                    </p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Plant Disease Detection using Attention-Based CNN. B.Tech Major Project.</p>
+                <div class="footer-pwa-badge">
+                    <i class="fa-solid fa-mobile-screen-button"></i> PWA Ready
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

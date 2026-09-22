@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}{{ disease.plant }} - {{ disease.disease }} | Plant Encyclopedia{% endblock %}
+
+{% block content %}
+<div class="container page-container">
+    <!-- Navigation Back Link -->
+    <div class="mb-4">
+        <a href="{{ url_for('encyclopedia') }}" class="btn btn-sm btn-outline">
+            <i class="fa-solid fa-arrow-left"></i> Back to Encyclopedia
+        </a>
+    </div>
+
+    <!-- Disease Main Profile Header Card -->
+    <div class="card mb-4">
+        <div class="disease-profile-header">
+            <div class="disease-header-meta">
+                <span class="plant-name-tag">{{ disease.plant }}</span>
+                {% if is_supported %}
+                <span class="badge badge-healthy"><i class="fa-solid fa-brain"></i> Supported by Active AI Model</span>
+                {% else %}
+                <span class="badge badge-info"><i class="fa-solid fa-book"></i> General Educational Guide</span>
+                {% endif %}
+            </div>
+            <h1 class="disease-profile-title">{{ disease.disease }}</h1>
+        </div>
+
+        <div class="disease-profile-body">
+            <h3><i class="fa-solid fa-file-lines"></i> Overview & Pathology</h3>
+            <p class="disease-description-full">{{ disease.description }}</p>
+        </div>
+    </div>
+
+    <!-- Detailed Guidance Sections Grid -->
+    <div class="guidance-grid mb-4">
+        <!-- Symptoms -->
+        <div class="card guidance-box symptoms-box">
+            <h3><i class="fa-solid fa-stethoscope"></i> Clinical Symptoms</h3>
+            <ul>
+                {% for item in disease.symptoms %}
+                <li><i class="fa-solid fa-circle-dot"></i> {{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Causes -->
+        <div class="card guidance-box causes-box">
+            <h3><i class="fa-solid fa-bug"></i> Environmental Causes</h3>
+            <ul>
+                {% for item in disease.causes %}
+                <li><i class="fa-solid fa-triangle-exclamation"></i> {{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Management -->
+        <div class="card guidance-box management-box">
+            <h3><i class="fa-solid fa-hand-holding-medical"></i> Treatment & Management</h3>
+            <ul>
+                {% for item in disease.management %}
+                <li><i class="fa-solid fa-kit-medical"></i> {{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Prevention -->
+        <div class="card guidance-box prevention-box">
+            <h3><i class="fa-solid fa-shield"></i> Preventive Agricultural Rules</h3>
+            <ul>
+                {% for item in disease.prevention %}
+                <li><i class="fa-solid fa-circle-check"></i> {{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- References & Disclaimer Card -->
+    <div class="card mb-4">
+        <h3><i class="fa-solid fa-book-bookmark"></i> References & Expert Guidance</h3>
+        {% if disease.external_references %}
+        <ul class="references-list mb-3">
+            {% for ref in disease.external_references %}
+            <li><i class="fa-solid fa-link"></i> {{ ref }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        <div class="alert alert-info">
+            <div class="alert-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="alert-content">
+                <strong>Educational Disclaimer:</strong> 
+                The information above is provided for general agricultural education. For severe crop loss or chemical spray dosages, please consult your local university agricultural extension officer or certified agronomist.
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="text-center mb-4">
+        <a href="{{ url_for('detect') }}" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-camera"></i> Scan Leaf For This Disease
+        </a>
+        <a href="{{ url_for('encyclopedia') }}" class="btn btn-secondary btn-lg">
+            <i class="fa-solid fa-book-open"></i> Browse All Diseases
+        </a>
+    </div>
+</div>
+{% endblock %}

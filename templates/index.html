@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Home | AI-Powered Plant Disease Detection using Attention CNN{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-container">
+        <div class="hero-badge">
+            <span class="pulse-dot"></span> B.Tech Major Project • MobileNetV2 + CBAM Attention
+        </div>
+        
+        <h1 class="hero-title">
+            AI-Powered Plant Disease Detection & Classification
+        </h1>
+
+        <p class="hero-subtitle">
+            Upload a plant leaf image and analyze potential crop diseases using a custom 
+            <strong>Attention-Based Deep Learning Model</strong> with real Grad-CAM explainability and immediate management guidelines.
+        </p>
+
+        <div class="hero-actions">
+            <a href="{{ url_for('detect') }}" class="btn btn-primary btn-lg" id="hero-detect-btn">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Detect Disease Now
+            </a>
+            <a href="{{ url_for('encyclopedia') }}" class="btn btn-secondary btn-lg" id="hero-encyclopedia-btn">
+                <i class="fa-solid fa-book-open"></i> Explore Encyclopedia
+            </a>
+        </div>
+
+        {% if not model_loaded %}
+        <div class="alert alert-warning hero-alert">
+            <div class="alert-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="alert-content">
+                <strong>Model Status Warning:</strong> The AI model has not been trained yet on a dataset. 
+                You can still browse the <strong>Encyclopedia</strong>, <strong>Dashboard</strong>, and <strong>About Page</strong>. 
+                To run live predictions, please run <code>python training/train_model.py</code>.
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-success hero-alert">
+            <div class="alert-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="alert-content">
+                <strong>Attention CNN Model Active:</strong> Model binary is loaded into memory and ready for instant leaf analysis.
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Workflow Steps Section -->
+<section class="section workflow-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">End-to-End Real Deep Learning Pipeline from Image Capture to Disease Management</p>
+        </div>
+
+        <div class="workflow-grid">
+            <div class="workflow-card">
+                <div class="workflow-number">01</div>
+                <div class="workflow-icon"><i class="fa-solid fa-camera-retro"></i></div>
+                <h3>Upload / Capture</h3>
+                <p>Select a clear leaf image from your desktop or capture directly using your mobile phone camera.</p>
+            </div>
+
+            <div class="workflow-card">
+                <div class="workflow-number">02</div>
+                <div class="workflow-icon"><i class="fa-solid fa-microchip"></i></div>
+                <h3>Validate & Scale</h3>
+                <p>Pillow checks image structure and resizes input to 224×224 normalized RGB batch tensor.</p>
+            </div>
+
+            <div class="workflow-card">
+                <div class="workflow-number">03</div>
+                <div class="workflow-icon"><i class="fa-solid fa-brain"></i></div>
+                <h3>CBAM Attention CNN</h3>
+                <p>MobileNetV2 feature extractor combined with Channel and Spatial attention modules predicts exact plant disease class.</p>
+            </div>
+
+            <div class="workflow-card">
+                <div class="workflow-number">04</div>
+                <div class="workflow-icon"><i class="fa-solid fa-square-poll-vertical"></i></div>
+                <h3>Grad-CAM & Guidance</h3>
+                <p>Get actual confidence percentage, status, Grad-CAM visual heatmap, and direct management guidelines.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Grid Section -->
+<section class="section features-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Key System Features</h2>
+            <p class="section-subtitle">Designed for Academic Excellence & Real Agricultural Utility</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-layer-group"></i></div>
+                <h3>CBAM Attention Mechanism</h3>
+                <p>Includes Channel Attention (Global Avg & Max Pooling + Shared MLP) and Spatial Attention (Channel-wise pooling + 7×7 Conv) to focus on subtle lesion boundaries.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-eye"></i></div>
+                <h3>Explainable AI (Grad-CAM)</h3>
+                <p>Generates true gradient heatmaps highlighting exactly which leaf surface regions influenced the neural network's final classification decision.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3>Real AI Integrity & Verification</h3>
+                <p>Zero fake or hard-coded predictions. All probabilities are calculated directly from softmax vector outputs with dynamic confidence evaluation.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-book-medical"></i></div>
+                <h3>Integrated Encyclopedia</h3>
+                <p>Detailed knowledge base containing symptoms, underlying causes, chemical/organic management, and preventive agricultural measures.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                <h3>SQLite & Chart.js Dashboard</h3>
+                <p>Tracks historical predictions, healthy vs. diseased ratios, top recurring plant pathologies, and average confidence trends.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+                <h3>Responsive PWA Design</h3>
+                <p>Optimized for Windows desktop, tablets, Android, and iOS devices with web app manifest and service worker shell caching.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section class="cta-banner">
+    <div class="container cta-container">
+        <div class="cta-content">
+            <h2>Ready to Analyze a Plant Leaf?</h2>
+            <p>Upload your sample image now for real-time attention-based classification.</p>
+        </div>
+        <div class="cta-action">
+            <a href="{{ url_for('detect') }}" class="btn btn-light btn-lg">
+                <i class="fa-solid fa-leaf"></i> Open Leaf Scanner
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

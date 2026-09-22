@@ -1,0 +1,478 @@
+[
+  {
+    "id": "tomato-early-blight",
+    "plant": "Tomato",
+    "disease": "Early Blight",
+    "description": "Early blight is a common fungal disease caused by Alternaria solani. It primarily affects older leaves near the base of the plant, producing characteristic concentric target-like rings.",
+    "symptoms": [
+      "Dark brown to black spots with concentric target-board rings on lower leaves",
+      "Yellowing halo surrounding leaf lesions",
+      "Premature leaf drop leading to sunscald on tomato fruits",
+      "Sunken dark lesions at the stem base"
+    ],
+    "causes": [
+      "Fungal pathogen Alternaria solani surviving in crop residue or soil",
+      "Warm temperatures (24°C - 29°C) combined with leaf wetness or high humidity",
+      "Spores spread by wind, rain splashes, and gardening tools"
+    ],
+    "management": [
+      "Prune affected lower leaves to improve airflow and reduce fungal load",
+      "Apply protective copper-based or chlorothalonil fungicides at first sign of symptoms",
+      "Remove and burn infected plant residue post-harvest"
+    ],
+    "prevention": [
+      "Practice 3 to 4 year crop rotation with non-solanaceous crops",
+      "Use drip irrigation instead of overhead watering to keep foliage dry",
+      "Apply organic mulch around plant bases to prevent rain splash from soil"
+    ],
+    "external_references": [
+      "USDA Agricultural Research Service - Solanaceous Crop Diseases",
+      "IPM - Integrated Pest Management Guidelines for Tomato Early Blight"
+    ]
+  },
+  {
+    "id": "tomato-late-blight",
+    "plant": "Tomato",
+    "disease": "Late Blight",
+    "description": "Late blight is a devastating disease caused by Phytophthora infestans (an oomycete). It spreads rapidly in cool, wet weather and can destroy entire tomato crops within days if left unchecked.",
+    "symptoms": [
+      "Large, dark, water-soaked oily spots on leaf tips and margins",
+      "White fuzzy mold growth on undersides of leaves during humid conditions",
+      "Brown to black firm decay spots on tomato fruit surface",
+      "Rapid wilting and collapse of whole foliage stems"
+    ],
+    "causes": [
+      "Oomycete Phytophthora infestans spores carried over long distances by wind",
+      "Cool temperatures (15°C - 22°C) combined with high humidity (>90%) or dew",
+      "Infected volunteer tomato plants or potato tubers nearby"
+    ],
+    "management": [
+      "Destroy and destroy severely infected plants immediately to prevent field spread",
+      "Apply systemic bio-fungicides or targeted contact fungicides (mancozeb, copper octanoate)",
+      "Maintain adequate plant spacing to facilitate rapid canopy drying"
+    ],
+    "prevention": [
+      "Plant certified disease-resistant hybrid tomato cultivars",
+      "Avoid planting tomatoes adjacent to potatoes",
+      "Monitor local weather disease alerts and spray preventative bio-protectants"
+    ],
+    "external_references": [
+      "FAO International Plant Protection Convention Bulletin on Phytophthora",
+      "University Agricultural Extension Guide: Late Blight Control"
+    ]
+  },
+  {
+    "id": "tomato-leaf-mold",
+    "plant": "Tomato",
+    "disease": "Leaf Mold",
+    "description": "Leaf mold is caused by Passalora fulva (syn. Cladosporium fulvum). It thrives primarily in greenhouse environments or high-density gardens with limited airflow.",
+    "symptoms": [
+      "Pale green to yellow spots on the upper leaf surface",
+      "Olive-green to velvety brown mold growth directly underneath yellow spots on leaf undersides",
+      "Old foliage turns brown, curls, and drops prematurely"
+    ],
+    "causes": [
+      "Fungal spores activated by relative humidity exceeding 85%",
+      "Stagnant air circulation in greenhouses or crowded garden beds",
+      "Warm indoor temperatures (20°C - 25°C)"
+    ],
+    "management": [
+      "Increase greenhouse ventilation using exhaust fans and open vents",
+      "Spray recommended sulfur or bio-based fungicide sprays",
+      "Remove heavily infected foliage from lower canopy"
+    ],
+    "prevention": [
+      "Maintain relative humidity below 85% in enclosed growing spaces",
+      "Select resistant tomato varieties carrying Cf-2 through Cf-9 resistance genes",
+      "Space plants generously to enable maximum airflow"
+    ],
+    "external_references": [
+      "Greenhouse Vegetable Crop Protection Handbook - Passalora fulva"
+    ]
+  },
+  {
+    "id": "tomato-septoria-leaf-spot",
+    "plant": "Tomato",
+    "disease": "Septoria Leaf Spot",
+    "description": "Septoria leaf spot is caused by the fungus Septoria lycopersici. It causes severe defoliation of tomato plants, reducing yield and quality of fruit due to exposure to direct sunlight.",
+    "symptoms": [
+      "Numerous small, circular spots (1.5-3mm) with dark brown borders and light gray centers",
+      "Tiny black specs (pycnidia fruiting bodies) visible in center of spots under magnification",
+      "Leaves turn yellow, dry up, and fall off from bottom to top"
+    ],
+    "causes": [
+      "Septoria lycopersici over-wintering on solanaceous weeds and crop debris",
+      "Frequent rains, heavy dews, and temperatures between 20°C - 25°C",
+      "Splashing water transferring fungal spores to lower leaves"
+    ],
+    "management": [
+      "Prune affected bottom foliage as soon as small spots appear",
+      "Apply protective fungicides containing copper or chlorothalonil",
+      "Clean tools with disinfectant after pruning diseased plants"
+    ],
+    "prevention": [
+      "Mulch soil around tomato plants with straw or plastic sheeting",
+      "Avoid overhead watering; use ground drip lines",
+      "Clean garden bed thoroughly at the end of each growing season"
+    ],
+    "external_references": [
+      "Plant Disease Journal - Septoria Lycopersici Management"
+    ]
+  },
+  {
+    "id": "tomato-spider-mites",
+    "plant": "Tomato",
+    "disease": "Spider Mites (Two-Spotted)",
+    "description": "Two-spotted spider mites (Tetranychus urticae) are tiny sap-sucking arachnids that feed on tomato leaves, causing stippling, discoloration, and fine webbing.",
+    "symptoms": [
+      "Yellow or bronzed stippling dots across leaf surfaces",
+      "Fine silk webbing on leaf undersides and terminal shoots",
+      "Leaves turn brittle, dry out, and turn bronze-brown before dropping"
+    ],
+    "causes": [
+      "Hot, dry, and dusty weather conditions favoring rapid mite multiplication",
+      "Over-use of broad-spectrum insecticides killing natural mite predators"
+    ],
+    "management": [
+      "Spray undersides of leaves with strong streams of water to dislodge mites and destroy webs",
+      "Apply insecticidal soap, neem oil, or horticultural oils",
+      "Introduce beneficial predatory mites (Phytoseiulus persimilis)"
+    ],
+    "prevention": [
+      "Keep soil adequately moist and overhead misting during dry heat waves",
+      "Maintain border flora that harbors predatory insects",
+      "Avoid excess nitrogen fertilization which creates succulent foliage favored by mites"
+    ],
+    "external_references": [
+      "Agricultural Entomology Extension - Spider Mite Control in Solanaceous Crops"
+    ]
+  },
+  {
+    "id": "tomato-target-spot",
+    "plant": "Tomato",
+    "disease": "Target Spot",
+    "description": "Target spot is caused by Corynespora cassiicola. It attacks foliage and fruit, forming brown necrotic spots that resemble targets.",
+    "symptoms": [
+      "Small double-ring brown spots expanding into target-like brown lesions",
+      "Chlorotic yellow halo around leaf spots",
+      "Pitted, sunken lesions on tomato fruit with dark centers"
+    ],
+    "causes": [
+      "Corynespora cassiicola fungus favored by warm, humid climate (20°C - 32°C)",
+      "Extended periods of leaf wetness and high rainfall"
+    ],
+    "management": [
+      "Apply registered fungicides such as azoxystrobin or copper compounds",
+      "Strip off lower infected leaves to minimize inoculum"
+    ],
+    "prevention": [
+      "Ensure proper crop spacing and weed management",
+      "Rotate tomatoes with non-host crops like corn or grasses"
+    ],
+    "external_references": [
+      "Tropical Plant Pathology Bulletin - Corynespora Target Spot"
+    ]
+  },
+  {
+    "id": "tomato-yellow-leaf-curl-virus",
+    "plant": "Tomato",
+    "disease": "Yellow Leaf Curl Virus (TYLCV)",
+    "description": "Tomato Yellow Leaf Curl Virus is a viral disease transmitted by the silverleaf whitefly (Bemisia tabaci). It causes severe stunting and leaf curling, leading to dramatic yield loss.",
+    "symptoms": [
+      "Upward curling and cupping of leaf margins",
+      "Severe chlorosis (yellowing) between leaf veins",
+      "Stunted plant growth and failure of flowers to set fruit",
+      "Leathery and thick leaf texture"
+    ],
+    "causes": [
+      "Begomovirus infection transmitted by feeding whiteflies (Bemisia tabaci)",
+      "Presence of infected weed reservoirs near fields"
+    ],
+    "management": [
+      "Control whitefly populations using yellow sticky traps and neem oil sprays",
+      "Remove and rouge out virus-infected young plants immediately"
+    ],
+    "prevention": [
+      "Plant TYLCV-resistant cultivars (e.g., Ty-1 or Ty-3 resistance genes)",
+      "Use fine mesh insect screens in greenhouses to exclude whiteflies",
+      "Refrain from planting near old infested crops"
+    ],
+    "external_references": [
+      "Virology Journal - Tomato Yellow Leaf Curl Virus Epidemiology"
+    ]
+  },
+  {
+    "id": "tomato-mosaic-virus",
+    "plant": "Tomato",
+    "disease": "Mosaic Virus (ToMV)",
+    "description": "Tomato Mosaic Virus (ToMV) is a highly stable tobamovirus that spreads mechanically through hands, tools, and infected seeds, causing mottled green and yellow leaf patterns.",
+    "symptoms": [
+      "Alternating light and dark green mottled 'mosaic' pattern on leaves",
+      "Fern-like leaf distortion and stringy leaf blades",
+      "Internal browning and uneven ripening of fruit"
+    ],
+    "causes": [
+      "Mechanically transmitted Tobamovirus surviving on tools, stakes, and hands",
+      "Infected seeds or tobacco products handled by garden workers"
+    ],
+    "management": [
+      "No chemical cure exists for viral plant infections; rogue out infected plants",
+      "Wash hands thoroughly with soap and water before handling healthy plants",
+      "Disinfect garden tools in 10% trisodium phosphate (TSP) or bleach solution"
+    ],
+    "prevention": [
+      "Purchase certified virus-free seeds",
+      "Use resistant varieties with Tm-2 gene",
+      "Prohibit tobacco use near tomato gardens"
+    ],
+    "external_references": [
+      "International Committee on Taxonomy of Viruses - Tobamovirus Profile"
+    ]
+  },
+  {
+    "id": "tomato-healthy",
+    "plant": "Tomato",
+    "disease": "Healthy",
+    "description": "The leaf shows optimal health with deep green color, smooth vein structure, firm texture, and complete absence of spots, lesions, fungal growth, or pest infestation.",
+    "symptoms": [
+      "Vibrant uniform green pigmentation",
+      "Intact leaf margins without burning or chlorosis",
+      "Strong turgid stem and leaf structure"
+    ],
+    "causes": [
+      "Balanced soil nutrients, appropriate sunlight exposure, and proper irrigation"
+    ],
+    "management": [
+      "Maintain current good cultural and agricultural practices",
+      "Regularly inspect leaves for early detection of potential pests"
+    ],
+    "prevention": [
+      "Continue balanced N-P-K fertilization and deep soil hydration"
+    ],
+    "external_references": [
+      "Standard Botanical Reference for Solanaceous Crops"
+    ]
+  },
+  {
+    "id": "potato-early-blight",
+    "plant": "Potato",
+    "disease": "Early Blight",
+    "description": "Potato Early Blight is caused by Alternaria solani. It targets mature leaves, creating dark brown concentric ring spots that prematurely defoliate the crop and reduce tuber yield.",
+    "symptoms": [
+      "Concentric ring dark brown spots on mature foliage",
+      "Yellow chlorotic tissue surrounding foliage spots",
+      "Sunken dry rot lesions on potato tubers"
+    ],
+    "causes": [
+      "Alternaria solani spores surviving in infected tuber debris and soil",
+      "High humidity and warm weather"
+    ],
+    "management": [
+      "Apply protective fungicides (chlorothalonil, mancozeb) starting at tuber initiation",
+      "Maintain optimal plant vigor with adequate nitrogen"
+    ],
+    "prevention": [
+      "Rotate crops with non-solanaceous species for at least 3 years",
+      "Destroy potato vines 2 weeks prior to harvest"
+    ],
+    "external_references": [
+      "Potato Association of America Handbook on Foliage Diseases"
+    ]
+  },
+  {
+    "id": "potato-late-blight",
+    "plant": "Potato",
+    "disease": "Late Blight",
+    "description": "Potato Late Blight is caused by Phytophthora infestans. Historically famous for causing the Irish Potato Famine, it rapidly rots foliage and potato tubers.",
+    "symptoms": [
+      "Water-soaked dark lesions expanding rapidly across foliage",
+      "White cottony growth on underside of leaves under humid conditions",
+      "Reddish-brown dry rot extending into tuber flesh"
+    ],
+    "causes": [
+      "Phytophthora infestans sporangia spread by wind and rain",
+      "Cool temperatures (10°C - 20°C) and high humidity (>90%)"
+    ],
+    "management": [
+      "Apply systemic fungicides promptly upon detection",
+      "Kill vines completely before tuber harvest to prevent tuber contamination"
+    ],
+    "prevention": [
+      "Plant certified disease-free seed potatoes",
+      "Hill up soil around potato plants to protect tubers from fungal spores"
+    ],
+    "external_references": [
+      "International Potato Center (CIP) - Late Blight Management"
+    ]
+  },
+  {
+    "id": "potato-healthy",
+    "plant": "Potato",
+    "disease": "Healthy",
+    "description": "Healthy potato leaf with robust chlorophyll distribution, crisp margins, and no signs of bacterial wilt, blight, or pest damage.",
+    "symptoms": [
+      "Uniform green foliage with firm venation",
+      "No spotting, wilting, or fungal growth"
+    ],
+    "causes": [
+      "Proper crop management, certified seed tubers, and optimal weather conditions"
+    ],
+    "management": [
+      "Continue standard irrigation and weed control"
+    ],
+    "prevention": [
+      "Regular scouting for potato beetle and foliage spot symptoms"
+    ],
+    "external_references": [
+      "Potato Agronomy Best Practices Manual"
+    ]
+  },
+  {
+    "id": "corn-common-rust",
+    "plant": "Corn (Maize)",
+    "disease": "Common Rust",
+    "description": "Corn Common Rust is caused by Puccinia sorghi. It produces powdery reddish-brown pustules on both upper and lower leaf surfaces.",
+    "symptoms": [
+      "Small, elongated cinnamon-brown pustules scattered across leaves",
+      "Pustules rupture to release powdery reddish-brown fungal spores",
+      "Leaves turn yellow and die prematurely if infection is severe"
+    ],
+    "causes": [
+      "Puccinia sorghi spores blown northward on wind currents from tropical regions",
+      "Cool to moderate temperatures (16°C - 23°C) and high relative humidity"
+    ],
+    "management": [
+      "Apply foliar fungicides if rust attacks upper canopy prior to silking stage",
+      "Fungicide treatment is rarely economical unless susceptible hybrids are grown"
+    ],
+    "prevention": [
+      "Plant rust-resistant corn hybrid varieties",
+      "Plant early in the season to avoid peak spore migration windows"
+    ],
+    "external_references": [
+      "Cereal Crop Disease Guide - Puccinia sorghi"
+    ]
+  },
+  {
+    "id": "corn-northern-leaf-blight",
+    "plant": "Corn (Maize)",
+    "disease": "Northern Leaf Blight",
+    "description": "Northern Corn Leaf Blight is caused by Exserohilum turcicum. It creates large, cigar-shaped grayish-green lesions that reduce photosynthetic area.",
+    "symptoms": [
+      "Long, elliptical, cigar-shaped lesions (2.5-15cm long) on leaves",
+      "Lesions start grayish-green and mature into tan or brown spots",
+      "Dark dusty spore masses inside lesions during wet weather"
+    ],
+    "causes": [
+      "Exserohilum turcicum fungus surviving in corn crop residue",
+      "Moderate temperatures (18°C - 27°C) and extended wet leaf periods"
+    ],
+    "management": [
+      "Apply foliar fungicides at silking if disease is present on ear leaves",
+      "Incorporate infected residue deep into soil after harvest"
+    ],
+    "prevention": [
+      "Plant NCLB-resistant corn hybrids with Ht genes",
+      "Rotate with non-host crops such as soybeans or alfalfa"
+    ],
+    "external_references": [
+      "Corn Disease Working Group - Northern Leaf Blight Advisory"
+    ]
+  },
+  {
+    "id": "corn-healthy",
+    "plant": "Corn (Maize)",
+    "disease": "Healthy",
+    "description": "Healthy maize leaf displaying vibrant green color, strong central midrib, and complete absence of rust pustules or blight lesions.",
+    "symptoms": [
+      "Smooth green leaf blade without brown or yellow spots",
+      "Sturdy central midrib"
+    ],
+    "causes": [
+      "Adequate soil nitrogen, sufficient sunlight, and good drainage"
+    ],
+    "management": [
+      "Maintain side-dress nitrogen schedule and weed-free field borders"
+    ],
+    "prevention": [
+      "Standard crop rotation and certified seed usage"
+    ],
+    "external_references": [
+      "International Maize and Wheat Improvement Center (CIMMYT)"
+    ]
+  },
+  {
+    "id": "apple-scab",
+    "plant": "Apple",
+    "disease": "Apple Scab",
+    "description": "Apple Scab is caused by Venturia inaequalis. It infects leaves and fruit, causing olive-green to black velvety spots that result in cracked, deformed apples.",
+    "symptoms": [
+      "Olive-green to dull dark brown velvety spots on leaf surfaces",
+      "Leaves turn yellow and drop prematurely in mid-summer",
+      "Scabby, corky, black cracked spots on apple fruits"
+    ],
+    "causes": [
+      "Venturia inaequalis ascospores released from fallen overwintered leaves",
+      "Cool, rainy spring weather"
+    ],
+    "management": [
+      "Apply preventative fungicides (captan, myclobutanil) during bud break and bloom",
+      "Rake and burn fallen apple leaves in autumn"
+    ],
+    "prevention": [
+      "Plant scab-resistant cultivars (e.g., Liberty, Prima, Enterprise)",
+      "Prune canopy trees annually to promote internal sunlight and rapid drying"
+    ],
+    "external_references": [
+      "Tree Fruit Research Bulletin - Venturia inaequalis Management"
+    ]
+  },
+  {
+    "id": "apple-black-rot",
+    "plant": "Apple",
+    "disease": "Black Rot",
+    "description": "Black rot is caused by the fungus Botryosphaeria obtusa. It affects apple leaves (causing 'frog-eye' leaf spots), branches, and fruit (causing mummified black rotted apples).",
+    "symptoms": [
+      "Small purple specks on leaves expanding into circular 'frog-eye' spots with purple margins",
+      "Black firm rot on fruit expanding in concentric rings",
+      "Sunken dark cankers on branches and limbs"
+    ],
+    "causes": [
+      "Botryosphaeria obtusa overwintering in mummified fruit, dead wood, and cankers",
+      "Warm weather (20°C - 27°C) accompanied by rain"
+    ],
+    "management": [
+      "Prune out dead wood, cankers, and fire blight strikes during winter dormancy",
+      "Remove all mummified apples remaining on trees or orchard floor"
+    ],
+    "prevention": [
+      "Apply copper sprays early in the season",
+      "Avoid wounding fruit or bark during harvest and pruning"
+    ],
+    "external_references": [
+      "Orchard Disease Management Manual - Black Rot"
+    ]
+  },
+  {
+    "id": "apple-healthy",
+    "plant": "Apple",
+    "disease": "Healthy",
+    "description": "Healthy apple foliage exhibiting dark green color, firm serrated leaf edges, and absence of fungal leaf spots or rust marks.",
+    "symptoms": [
+      "Vibrant green leaf canopy with clean serrated margins",
+      "No velvet spots, frog-eye rings, or deformation"
+    ],
+    "causes": [
+      "Proper orchard canopy management, dormant copper spraying, and good air drainage"
+    ],
+    "management": [
+      "Maintain annual dormant pruning and balanced micronutrient sprays"
+    ],
+    "prevention": [
+      "Routine orchard scouting and fallen leaf sanitation"
+    ],
+    "external_references": [
+      "Pomology & Tree Fruit Production Standard"
+    ]
+  }
+]
