@@ -1,6 +1,7 @@
 import os
 import json
 import uuid
+import time
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
@@ -63,68 +64,97 @@ def detect():
 @app.route('/predict', methods=['POST'])
 def predict():
     """
-    Real AI prediction endpoint.
+    Real AI prediction endpoint with detailed Render diagnostics.
 
-    IMPORTANT:
-    Confidence and disease status are SEPARATE.
-
-    Confidence < 60% does NOT mean diseased.
-    The disease/healthy status comes ONLY from
-    the predicted dataset class.
+    This version logs every major stage so we can identify
+    exactly where a production timeout/502 occurs.
     """
+
+    start_time = time.time()
+
+    def log(message):
+        elapsed = time.time() - start_time
+        print(
+            f"[PREDICT +{elapsed:.2f}s] {message}",
+            flush=True
+        )
+
+    log("========== PREDICTION REQUEST STARTED ==========")
 
     # ---------------------------------------------------------
     # CHECK MODEL
     # ---------------------------------------------------------
 
+    log("Checking model status...")
+
     if not predictor_instance.is_loaded:
+        log("Model is NOT loaded. Loading model now...")
 
         predictor_instance.load_model_and_classes()
 
+        log(
+            f"Model loading finished. Loaded={predictor_instance.is_loaded}"
+        )
+
         if not predictor_instance.is_loaded:
+            log("ERROR: Model could not be loaded.")
 
             return jsonify({
                 'success': False,
                 'error': 'AI model could not be loaded.'
             }), 400
 
+    log("Model is loaded and ready.")
 
     # ---------------------------------------------------------
     # CHECK IMAGE
     # ---------------------------------------------------------
 
+    log("Checking uploaded image...")
+
     if 'leaf_image' not in request.files:
+        log("ERROR: No leaf_image in request.files.")
 
         return jsonify({
             'success': False,
             'error': 'No image file uploaded.'
         }), 400
 
-
     file = request.files['leaf_image']
 
+    log(
+        f"Received file: {file.filename} "
+        f"content_type={file.content_type}"
+    )
 
     # ---------------------------------------------------------
     # VALIDATE IMAGE
     # ---------------------------------------------------------
 
-    is_valid, error_msg, pil_image = (
-        validate_image_file(file)
+    log("Starting image validation...")
+
+    is_valid, error_msg, pil_image = validate_image_file(file)
+
+    log(
+        f"Image validation completed. "
+        f"valid={is_valid}"
     )
 
     if not is_valid:
+        log(f"Image validation failed: {error_msg}")
 
         return jsonify({
             'success': False,
             'error': error_msg
         }), 400
 
-
     try:
 
         # -----------------------------------------------------
         # SAVE ORIGINAL IMAGE
         # -----------------------------------------------------
+
+        log("Starting original image save...")
 
         unique_id = str(uuid.uuid4())[:8]
 
@@ -136,7 +166,6 @@ def predict():
             f"{unique_id}_{safe_filename}"
         )
 
-
         leaf_upload_dir = (
             UPLOAD_FOLDER / 'leaves'
         )
@@ -146,7 +175,6 @@ def predict():
             exist_ok=True
         )
 
-
         saved_image_path = (
             leaf_upload_dir / filename
         )
@@ -155,15 +183,21 @@ def predict():
             saved_image_path
         )
 
-
         rel_image_path = (
             f"uploads/leaves/{filename}"
         )
 
+        log(
+            f"Original image saved: {saved_image_path}"
+        )
 
         # -----------------------------------------------------
         # REAL MODEL PREDICTION
         # -----------------------------------------------------
+
+        log("========== STARTING MODEL PREDICTION ==========")
+
+        prediction_start = time.time()
 
         pred_result = (
             predictor_instance.predict(
@@ -171,9 +205,19 @@ def predict():
             )
         )
 
+        prediction_time = time.time() - prediction_start
+
+        log(
+            f"MODEL PREDICTION FINISHED "
+            f"in {prediction_time:.2f}s"
+        )
+
+        log(
+            f"Prediction result: {pred_result}"
+        )
 
         # -----------------------------------------------------
-        # DO NOT CHANGE MODEL PREDICTION
+        # EXTRACT PREDICTION
         # -----------------------------------------------------
 
         plant_name = pred_result.get(
@@ -196,6 +240,12 @@ def predict():
             0
         )
 
+        log(
+            f"Plant={plant_name} | "
+            f"Disease={disease_name} | "
+            f"Status={status} | "
+            f"Confidence={confidence}"
+        )
 
         # -----------------------------------------------------
         # GRAD-CAM
@@ -203,8 +253,13 @@ def predict():
 
         gradcam_rel_path = None
 
+        log("========== STARTING GRAD-CAM ==========")
+
+        gradcam_start = time.time()
 
         if predictor_instance.model is not None:
+
+            log("Model object exists. Finding predicted class...")
 
             top_class_name = (
                 pred_result.get(
@@ -212,8 +267,11 @@ def predict():
                 )
             )
 
-            class_idx = None
+            log(
+                f"Predicted raw class: {top_class_name}"
+            )
 
+            class_idx = None
 
             for idx, c_name in (
                 predictor_instance
@@ -227,13 +285,24 @@ def predict():
 
                     break
 
+            log(
+                f"Grad-CAM class index: {class_idx}"
+            )
 
             if class_idx is not None:
 
                 try:
 
+                    log(
+                        "Importing preprocessing function..."
+                    )
+
                     from utils.preprocessing import (
                         preprocess_leaf_image
+                    )
+
+                    log(
+                        "Starting image preprocessing for Grad-CAM..."
                     )
 
                     batch_tensor = (
@@ -242,6 +311,15 @@ def predict():
                         )
                     )
 
+                    log(
+                        "Grad-CAM preprocessing finished."
+                    )
+
+                    log(
+                        "Calling generate_gradcam_heatmap()..."
+                    )
+
+                    heatmap_start = time.time()
 
                     heatmap = (
                         generate_gradcam_heatmap(
@@ -251,8 +329,22 @@ def predict():
                         )
                     )
 
+                    heatmap_time = time.time() - heatmap_start
+
+                    log(
+                        f"generate_gradcam_heatmap() "
+                        f"finished in {heatmap_time:.2f}s"
+                    )
 
                     if heatmap is not None:
+
+                        log(
+                            "Heatmap generated successfully."
+                        )
+
+                        log(
+                            "Saving Grad-CAM overlay..."
+                        )
 
                         gradcam_rel_path = (
                             save_gradcam_overlay(
@@ -262,16 +354,55 @@ def predict():
                             )
                         )
 
+                        log(
+                            f"Grad-CAM overlay saved: "
+                            f"{gradcam_rel_path}"
+                        )
+
+                    else:
+
+                        log(
+                            "WARNING: Grad-CAM returned None."
+                        )
+
                 except Exception as gradcam_error:
 
-                    app.logger.warning(
-                        f"Grad-CAM failed: {gradcam_error}"
+                    log(
+                        f"WARNING: Grad-CAM failed: "
+                        f"{gradcam_error}"
                     )
 
+                    app.logger.exception(
+                        "Grad-CAM exception"
+                    )
+
+            else:
+
+                log(
+                    "WARNING: Could not find class index "
+                    "for Grad-CAM."
+                )
+
+        else:
+
+            log(
+                "WARNING: predictor_instance.model is None."
+            )
+
+        gradcam_time = time.time() - gradcam_start
+
+        log(
+            f"TOTAL GRAD-CAM STAGE TIME: "
+            f"{gradcam_time:.2f}s"
+        )
 
         # -----------------------------------------------------
         # SAVE TO DATABASE
         # -----------------------------------------------------
+
+        log("========== STARTING DATABASE SAVE ==========")
+
+        database_start = time.time()
 
         prediction_id = insert_prediction(
 
@@ -291,10 +422,30 @@ def predict():
 
         )
 
+        database_time = time.time() - database_start
+
+        log(
+            f"Database save finished in "
+            f"{database_time:.2f}s"
+        )
+
+        log(
+            f"Prediction ID: {prediction_id}"
+        )
 
         # -----------------------------------------------------
         # RESPONSE
         # -----------------------------------------------------
+
+        total_time = time.time() - start_time
+
+        log(
+            "========== PREDICTION COMPLETE =========="
+        )
+
+        log(
+            f"TOTAL REQUEST TIME: {total_time:.2f}s"
+        )
 
         return jsonify({
 
@@ -309,16 +460,32 @@ def predict():
 
         })
 
-
     except RuntimeError as re:
+
+        total_time = time.time() - start_time
+
+        log(
+            f"RUNTIME ERROR after {total_time:.2f}s: "
+            f"{re}"
+        )
+
+        app.logger.exception(
+            "Prediction RuntimeError"
+        )
 
         return jsonify({
             'success': False,
             'error': str(re)
         }), 400
 
-
     except Exception as e:
+
+        total_time = time.time() - start_time
+
+        log(
+            f"FATAL PREDICTION ERROR after "
+            f"{total_time:.2f}s: {e}"
+        )
 
         app.logger.exception(
             "Prediction pipeline failed"
