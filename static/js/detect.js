@@ -1,143 +1,509 @@
-/* Leaf Image Detection Upload JavaScript */
+/* ============================================================
+   PHYTO VISION - LEAF IMAGE DETECTION
+   Mobile Camera + Gallery + Desktop File Upload
+   ============================================================ */
+
 document.addEventListener('DOMContentLoaded', () => {
+
     const detectForm = document.getElementById('detect-form');
-    const fileInput = document.getElementById('leaf_image');
+
+    const cameraInput = document.getElementById('camera-input');
+    const galleryInput = document.getElementById('gallery-input');
+
+    const cameraBtn = document.getElementById('camera-btn');
+    const galleryBtn = document.getElementById('gallery-btn');
+
     const dropZone = document.getElementById('drop-zone');
     const dropPrompt = document.getElementById('drop-zone-prompt');
-    const previewContainer = document.getElementById('preview-container');
-    const previewImage = document.getElementById('image-preview');
-    const removeImgBtn = document.getElementById('remove-img-btn');
-    const errorBox = document.getElementById('detect-error-box');
-    const errorMsg = document.getElementById('detect-error-msg');
-    const submitBtn = document.getElementById('submit-detect-btn');
-    const loadingOverlay = document.getElementById('loading-overlay');
 
-    if (!detectForm) return;
+    const previewContainer =
+        document.getElementById('preview-container');
 
-    // Trigger file dialog on dropzone click
-    dropZone.addEventListener('click', (e) => {
-        if (e.target.closest('#remove-img-btn')) return;
-        fileInput.click();
+    const previewImage =
+        document.getElementById('image-preview');
+
+    const removeImgBtn =
+        document.getElementById('remove-img-btn');
+
+    const errorBox =
+        document.getElementById('detect-error-box');
+
+    const errorMsg =
+        document.getElementById('detect-error-msg');
+
+    const submitBtn =
+        document.getElementById('submit-detect-btn');
+
+    const loadingOverlay =
+        document.getElementById('loading-overlay');
+
+
+    if (!detectForm) {
+        return;
+    }
+
+
+    /* ========================================================
+       STORE SELECTED FILE
+       ======================================================== */
+
+    let selectedFile = null;
+
+
+    /* ========================================================
+       CAMERA BUTTON
+       ======================================================== */
+
+    cameraBtn.addEventListener('click', (e) => {
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        hideError();
+
+        /*
+         * This input has:
+         *
+         * accept="image/*"
+         * capture="environment"
+         *
+         * On supported mobile browsers this requests
+         * the rear-facing camera.
+         */
+
+        cameraInput.click();
+
     });
 
-    // Drag & Drop handlers
+
+    /* ========================================================
+       GALLERY BUTTON
+       ======================================================== */
+
+    galleryBtn.addEventListener('click', (e) => {
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        hideError();
+
+        galleryInput.click();
+
+    });
+
+
+    /* ========================================================
+       CAMERA INPUT CHANGE
+       ======================================================== */
+
+    cameraInput.addEventListener('change', () => {
+
+        if (
+            cameraInput.files &&
+            cameraInput.files.length > 0
+        ) {
+
+            const file = cameraInput.files[0];
+
+            handleFileSelect(file);
+
+        }
+
+    });
+
+
+    /* ========================================================
+       GALLERY INPUT CHANGE
+       ======================================================== */
+
+    galleryInput.addEventListener('change', () => {
+
+        if (
+            galleryInput.files &&
+            galleryInput.files.length > 0
+        ) {
+
+            const file = galleryInput.files[0];
+
+            handleFileSelect(file);
+
+        }
+
+    });
+
+
+    /* ========================================================
+       DESKTOP DROPZONE CLICK
+       ======================================================== */
+
+    dropZone.addEventListener('click', (e) => {
+
+        /*
+         * Don't trigger file picker if user clicked
+         * one of the buttons.
+         */
+
+        if (
+            e.target.closest('#camera-btn') ||
+            e.target.closest('#gallery-btn') ||
+            e.target.closest('#remove-img-btn')
+        ) {
+
+            return;
+
+        }
+
+        /*
+         * On desktop, clicking the main area opens
+         * the gallery/file picker.
+         */
+
+        galleryInput.click();
+
+    });
+
+
+    /* ========================================================
+       DRAG & DROP
+       ======================================================== */
+
     ['dragenter', 'dragover'].forEach(eventName => {
+
         dropZone.addEventListener(eventName, (e) => {
+
             e.preventDefault();
             e.stopPropagation();
+
             dropZone.classList.add('dragover');
-        }, false);
+
+        });
+
     });
+
 
     ['dragleave', 'drop'].forEach(eventName => {
+
         dropZone.addEventListener(eventName, (e) => {
+
             e.preventDefault();
             e.stopPropagation();
+
             dropZone.classList.remove('dragover');
-        }, false);
+
+        });
+
     });
+
 
     dropZone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        if (files && files.length > 0) {
-            fileInput.files = files;
+
+        const files = e.dataTransfer.files;
+
+        if (
+            files &&
+            files.length > 0
+        ) {
+
             handleFileSelect(files[0]);
+
         }
+
     });
 
-    fileInput.addEventListener('change', () => {
-        if (fileInput.files && fileInput.files.length > 0) {
-            handleFileSelect(fileInput.files[0]);
-        }
-    });
+
+    /* ========================================================
+       FILE VALIDATION
+       ======================================================== */
 
     function handleFileSelect(file) {
+
         hideError();
 
-        const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
-        if (!validTypes.includes(file.type)) {
-            showError(`Invalid file format '${file.type}'. Please upload JPG, PNG, or WEBP image.`);
-            resetFile();
+        if (!file) {
             return;
         }
 
-        if (file.size > 16 * 1024 * 1024) {
-            showError(`File size (${(file.size / (1024 * 1024)).toFixed(1)} MB) exceeds maximum 16 MB limit.`);
+
+        console.log(
+            '[DETECT] Selected file:',
+            file.name
+        );
+
+        console.log(
+            '[DETECT] MIME type:',
+            file.type
+        );
+
+        console.log(
+            '[DETECT] Size:',
+            file.size
+        );
+
+
+        const validTypes = [
+            'image/png',
+            'image/jpeg',
+            'image/jpg',
+            'image/webp'
+        ];
+
+
+        /*
+         * Some mobile cameras may return an empty
+         * MIME type even though the file is an image.
+         *
+         * Therefore don't reject purely because
+         * file.type is empty.
+         */
+
+        if (
+            file.type &&
+            !validTypes.includes(file.type)
+        ) {
+
+            showError(
+                `Invalid image format "${file.type}". ` +
+                `Please use JPG, PNG, or WEBP.`
+            );
+
             resetFile();
+
             return;
+
         }
 
-        // Show image preview
+
+        /* 16 MB limit */
+
+        if (
+            file.size >
+            16 * 1024 * 1024
+        ) {
+
+            showError(
+                `File size is ` +
+                `${(file.size / (1024 * 1024)).toFixed(1)} MB. ` +
+                `Maximum allowed size is 16 MB.`
+            );
+
+            resetFile();
+
+            return;
+
+        }
+
+
+        selectedFile = file;
+
+
+        /* ====================================================
+           PREVIEW
+           ==================================================== */
+
         const reader = new FileReader();
+
+
         reader.onload = (e) => {
-            previewImage.src = e.target.result;
+
+            previewImage.src =
+                e.target.result;
+
             dropPrompt.classList.add('hidden');
+
             previewContainer.classList.remove('hidden');
+
+            submitBtn.disabled = false;
+
         };
+
+
+        reader.onerror = () => {
+
+            showError(
+                'Unable to read the selected image.'
+            );
+
+        };
+
+
         reader.readAsDataURL(file);
+
     }
+
+
+    /* ========================================================
+       REMOVE IMAGE
+       ======================================================== */
 
     removeImgBtn.addEventListener('click', (e) => {
+
+        e.preventDefault();
         e.stopPropagation();
+
         resetFile();
+
     });
+
 
     function resetFile() {
-        fileInput.value = '';
+
+        selectedFile = null;
+
+        cameraInput.value = '';
+
+        galleryInput.value = '';
+
         previewImage.src = '#';
+
         previewContainer.classList.add('hidden');
+
         dropPrompt.classList.remove('hidden');
+
         hideError();
+
     }
 
-    function showError(msg) {
-        errorMsg.textContent = msg;
+
+    /* ========================================================
+       ERROR HANDLING
+       ======================================================== */
+
+    function showError(message) {
+
+        errorMsg.textContent = message;
+
         errorBox.classList.remove('hidden');
+
     }
+
 
     function hideError() {
+
         errorBox.classList.add('hidden');
+
         errorMsg.textContent = '';
+
     }
 
-    // Submit Form via AJAX
-    detectForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        hideError();
 
-        if (!fileInput.files || fileInput.files.length === 0) {
-            showError('Please select or capture a plant leaf image first.');
-            return;
-        }
+    /* ========================================================
+       SUBMIT PREDICTION
+       ======================================================== */
 
-        const formData = new FormData();
-        formData.append('leaf_image', fileInput.files[0]);
+    detectForm.addEventListener(
+        'submit',
+        async (e) => {
 
-        // Show loading spinner
-        loadingOverlay.classList.remove('hidden');
-        submitBtn.disabled = true;
+            e.preventDefault();
 
-        try {
-            const response = await fetch('/predict', {
-                method: 'POST',
-                body: formData
-            });
+            hideError();
 
-            const data = await response.json();
 
-            if (response.ok && data.success) {
-                // Redirect to result page
-                window.location.href = data.redirect_url;
-            } else {
-                loadingOverlay.classList.add('hidden');
-                submitBtn.disabled = false;
-                showError(data.error || 'An error occurred during leaf analysis.');
+            if (!selectedFile) {
+
+                showError(
+                    'Please take a photo or choose a leaf image first.'
+                );
+
+                return;
+
             }
-        } catch (err) {
-            loadingOverlay.classList.add('hidden');
-            submitBtn.disabled = false;
-            showError('Network error or server connection failed. Please try again.');
+
+
+            console.log(
+                '[DETECT] Sending image to /predict...'
+            );
+
+
+            const formData = new FormData();
+
+            formData.append(
+                'leaf_image',
+                selectedFile
+            );
+
+
+            /* Loading UI */
+
+            loadingOverlay.classList.remove('hidden');
+
+            submitBtn.disabled = true;
+
+
+            try {
+
+                const response = await fetch(
+                    '/predict',
+                    {
+                        method: 'POST',
+                        body: formData
+                    }
+                );
+
+
+                console.log(
+                    '[DETECT] Server response:',
+                    response.status
+                );
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    response.ok &&
+                    data.success
+                ) {
+
+                    console.log(
+                        '[DETECT] Prediction successful.'
+                    );
+
+
+                    window.location.href =
+                        data.redirect_url;
+
+
+                } else {
+
+                    loadingOverlay.classList.add(
+                        'hidden'
+                    );
+
+                    submitBtn.disabled = false;
+
+
+                    showError(
+                        data.error ||
+                        'An error occurred during leaf analysis.'
+                    );
+
+                }
+
+
+            } catch (err) {
+
+                console.error(
+                    '[DETECT] Request failed:',
+                    err
+                );
+
+
+                loadingOverlay.classList.add(
+                    'hidden'
+                );
+
+                submitBtn.disabled = false;
+
+
+                showError(
+                    'Network error or server connection failed. Please try again.'
+                );
+
+            }
+
         }
-    });
+    );
+
 });
